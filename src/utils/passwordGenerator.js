@@ -81,8 +81,10 @@ export const generatePassword = (options) => {
  * @returns {string} - Modified password
  */
 const replaceRandomChar = (password, charset) => {
-  const pos = Math.floor(Math.random() * password.length);
-  const newChar = charset[Math.floor(Math.random() * charset.length)];
+  const randomValues = new Uint32Array(2);
+  crypto.getRandomValues(randomValues);
+  const pos = randomValues[0] % password.length;
+  const newChar = charset[randomValues[1] % charset.length];
   return password.substring(0, pos) + newChar + password.substring(pos + 1);
 };
 
@@ -107,14 +109,17 @@ export const generatePassphrase = (wordCount = 4, separator = '-', capitalize = 
     'cloud', 'star', 'moon', 'sun', 'comet', 'nova', 'cosmos', 'galaxy'
   ];
   
+  const randomValues = new Uint32Array(wordCount + 1);
+  crypto.getRandomValues(randomValues);
+  
   const words = [];
   for (let i = 0; i < wordCount; i++) {
-    let word = wordList[Math.floor(Math.random() * wordList.length)];
+    let word = wordList[randomValues[i] % wordList.length];
     if (capitalize) {
       word = word.charAt(0).toUpperCase() + word.slice(1);
     }
     if (includeNumbers && i === wordCount - 1) {
-      word += Math.floor(Math.random() * 100);
+      word += randomValues[wordCount] % 100;
     }
     words.push(word);
   }
